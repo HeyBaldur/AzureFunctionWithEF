@@ -18,15 +18,10 @@ namespace AzureFunctionWithEF.Repositories
         //    _dbContext = dbContext;
         //}
 
-        //public DimAccountRepository()
-        //{
-
-        //}
-
-        ///// <summary>
-        ///// Returns all missing fields
-        ///// </summary>
-        ///// <returns></returns>
+        /// <summary>
+        /// Returns all missing fields
+        /// </summary>
+        /// <returns></returns>
         //public async Task<List<DimAccount>> ReturnMissingFields()
         //{
         //    string param = "Expenditures";

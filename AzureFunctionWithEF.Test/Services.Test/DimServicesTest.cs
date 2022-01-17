@@ -3,10 +3,6 @@ using AzureFunctionWithEF.Services;
 using AzureFunctionWithEF.Test.Data;
 using Moq;
 using NUnit.Framework;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace AzureFunctionWithEF.Test.Services.Test
@@ -46,15 +42,5 @@ namespace AzureFunctionWithEF.Test.Services.Test
             var result = await opObject.Add(accnt);
             Assert.AreEqual(accnt.AccountKey, result.AccountKey);
         }
-
-        //[Test]
-        //public void Add_ThrowArgumenNullException()
-        //{
-        //    var opObject = _dimServiceMock.Object;
-        //    var arrange = opObject.Add(null).Result;
-        //    Assert.That(() => opObject.Add(null), Throws.Exception);
-        //}
-
-
     }
 }

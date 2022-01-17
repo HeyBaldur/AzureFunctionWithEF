@@ -1,4 +1,5 @@
 ﻿using AzureFunctionWithEF.Repositories;
+using Microsoft.EntityFrameworkCore;
 using Moq;
 using Newtonsoft.Json.Linq;
 using NUnit.Framework;
@@ -14,52 +15,59 @@ namespace AzureFunctionWithEF.Test.Repositories
     public class DimAccountRepositoryTest
     {
         private Mock<IDimAccountRepository> _dimAccountMock;
+        private Mock<DbContext> _dbContextMock;
 
         [SetUp]
         public void SetUp()
         {
             _dimAccountMock = new Mock<IDimAccountRepository>();
+            _dbContextMock = new Mock<DbContext>();
         }
 
         [Test]
         public void ReturnMissingListFromSql_Test()
         {
-            //List<string> myList = new()
-            //{
-            //    "Germany"
-            //};
-
             var myRepo = new DimAccountRepository();
-
-            string connectionString = string.Empty;
             
-            var mySection = ConfigureEnvironmentVariablesFromLocalSettings();
+            var configToken = ConfigureEnvironmentVariablesFromLocalSettings();
 
-            for (int i = 0; i < mySection.Count(); i++)
+            string connectionString = ReturnConnectionString(configToken);
+
+            var result = myRepo.ReturnMissingListFromSql(connectionString);
+
+            Assert.IsNotNull(result);
+        }
+
+        #region Private methods
+        private static string ReturnConnectionString(IEnumerable<JToken> jTokenValues)
+        {
+            var cnxString = string.Empty;
+            for (int i = 0; i < jTokenValues.Count(); i++)
             {
-                var str1 = mySection.ElementAt(i);
+                var str1 = jTokenValues.ElementAt(i);
 
                 foreach (JProperty attributeProperty in str1)
                 {
                     if (attributeProperty.Name == "SqlConnectionString")
                     {
                         var attribute = str1[attributeProperty.Name];
-                        connectionString = attribute.ToString();
+                        cnxString = attribute.ToString();
                     }
                 }
             }
 
-            var result = myRepo.ReturnMissingListFromSql(connectionString);
+            return cnxString;
         }
 
-        public IEnumerable<JToken> ConfigureEnvironmentVariablesFromLocalSettings()
+        private static IEnumerable<JToken> ConfigureEnvironmentVariablesFromLocalSettings()
         {
             var path = Path.GetDirectoryName(typeof(DimAccountRepository)
-                .Assembly.Location); var json = 
+                .Assembly.Location); var json =
                     File.ReadAllText(Path.Join(path, "local.settings.json"));
             var parsed = Newtonsoft.Json.Linq.JObject.Parse(json).Values();
 
             return parsed;
         }
+        #endregion
     }
 }

@@ -7,5 +7,6 @@ namespace AzureFunctionWithEF.Repositories
     public interface IDimAccountRepository
     {
         List<string> ReturnMissingListFromSql(string cnxString);
+        //Task<List<DimAccount>> ReturnMissingFields();
     }
 }
