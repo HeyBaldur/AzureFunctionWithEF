@@ -27,51 +27,52 @@ namespace AzureFunctionWithEF.Test.Repositories
             _dbContext = new Mock<MyDbContext>();
         }
 
-        [Test]
-        [Ignore("This is a repository, it should not be tested")]
-        public void ReturnMissingListFromSql_Test()
-        {
-            var myRepo = new DimAccountRepository(_dbContext.Object);
+        //[Test]
+        //[Ignore("This is a repository, it should not be tested")]
+        //public void ReturnMissingListFromSql_Test()
+        //{
+        //    var myRepo = new DimAccountRepository(_dbContext.Object);
             
-            var configToken = ConfigureEnvironmentVariablesFromLocalSettings();
+        //    var configToken = ConfigureEnvironmentVariablesFromLocalSettings();
 
-            string connectionString = ReturnConnectionString(configToken);
+        //    string connectionString = ReturnConnectionString(configToken);
 
-            var result = myRepo.ReturnMissingListFromSql(ref connectionString);
+        //    var result = myRepo.ReturnMissingListFromSql(ref connectionString, out int sqlValue);
 
-            Assert.IsNotNull(result);
-        }
+        //    Assert.IsNotNull(result);
+        //    Assert.AreEqual(1, sqlValue);
+        //}
 
-        #region Private methods
-        private static string ReturnConnectionString(IEnumerable<JToken> jTokenValues)
-        {
-            var cnxString = string.Empty;
-            for (int i = 0; i < jTokenValues.Count(); i++)
-            {
-                var str1 = jTokenValues.ElementAt(i);
+        //#region Private methods
+        //private static string ReturnConnectionString(IEnumerable<JToken> jTokenValues)
+        //{
+        //    var cnxString = string.Empty;
+        //    for (int i = 0; i < jTokenValues.Count(); i++)
+        //    {
+        //        var str1 = jTokenValues.ElementAt(i);
 
-                foreach (JProperty attributeProperty in str1)
-                {
-                    if (attributeProperty.Name == "SqlConnectionString")
-                    {
-                        var attribute = str1[attributeProperty.Name];
-                        cnxString = attribute.ToString();
-                    }
-                }
-            }
+        //        foreach (JProperty attributeProperty in str1)
+        //        {
+        //            if (attributeProperty.Name == "SqlConnectionString")
+        //            {
+        //                var attribute = str1[attributeProperty.Name];
+        //                cnxString = attribute.ToString();
+        //            }
+        //        }
+        //    }
 
-            return cnxString;
-        }
+        //    return cnxString;
+        //}
 
-        private static IEnumerable<JToken> ConfigureEnvironmentVariablesFromLocalSettings()
-        {
-            var path = Path.GetDirectoryName(typeof(DimAccountRepository)
-                .Assembly.Location); 
-            var json = File.ReadAllText(Path.Join(path, "local.settings.json"));
-            var parsed = Newtonsoft.Json.Linq.JObject.Parse(json).Values();
+        //private static IEnumerable<JToken> ConfigureEnvironmentVariablesFromLocalSettings()
+        //{
+        //    var path = Path.GetDirectoryName(typeof(DimAccountRepository)
+        //        .Assembly.Location); 
+        //    var json = File.ReadAllText(Path.Join(path, "local.settings.json"));
+        //    var parsed = Newtonsoft.Json.Linq.JObject.Parse(json).Values();
 
-            return parsed;
-        }
-        #endregion
+        //    return parsed;
+        //}
+        //#endregion
     }
 }

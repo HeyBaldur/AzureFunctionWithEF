@@ -41,7 +41,7 @@ namespace AzureFunctionWithEF.Repositories
         /// </summary>
         /// <param name="cnxString"></param>
         /// <returns></returns>
-        public List<string> ReturnMissingListFromSql(ref string cnxString)
+        public List<string> ReturnMissingListFromSql(ref string cnxString, out int sqlValue)
         {
             List<string> myList = new List<string>();
             SqlConnection connection;
@@ -69,6 +69,7 @@ namespace AzureFunctionWithEF.Repositories
             adapter = new SqlDataAdapter(command);
             adapter.Fill(ds);
 
+            sqlValue = (ds.Tables[0].Rows.Count > 0) ? 1 : 0;
 
             int i;
             for (i = 0; i <= ds.Tables[0].Rows.Count - 1; i++)

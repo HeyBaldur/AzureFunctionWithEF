@@ -1,6 +1,7 @@
 ﻿using AzureFunctionWithEF.Common.Exceptions;
 using AzureFunctionWithEF.Repositories;
 using AzureFunctionWithEF.Services.Interfaces;
+using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -12,12 +13,15 @@ namespace AzureFunctionWithEF.Services
     {
         private readonly IDimAccountRepository _dimAccountRepo;
         private readonly IGetConnections _connections;
+        private readonly ILogger<DimService> _logger;
         public DimService(
             IDimAccountRepository dimAccountRepo,
-            IGetConnections connections)
+            IGetConnections connections,
+            ILogger<DimService> logger)
         {
             _dimAccountRepo = dimAccountRepo;
             _connections = connections;
+            _logger = logger;
         }
 
         /// <summary>
@@ -31,9 +35,21 @@ namespace AzureFunctionWithEF.Services
                 return Task.Factory.StartNew(() =>
                 {
                     string cnxString = _connections.GetConnectionString();
-                    var listOfCountries = _dimAccountRepo.ReturnMissingListFromSql(ref cnxString);
+                    var listOfCountries = _dimAccountRepo.ReturnMissingListFromSql(ref cnxString, out int sqlValue);
 
-                    if (listOfCountries == null)
+                    switch (sqlValue)
+                    {
+                        case 1:
+                            _logger.LogInformation("There available values in the request");
+                            break;
+                        case 0:
+                            _logger.LogWarning("No values to return");
+                            break;
+                        default:
+                            break;
+                    }
+
+                    if (listOfCountries == null && sqlValue == 0)
                     {
                         throw new NullObjectException("No list of objects were found");
                     }
