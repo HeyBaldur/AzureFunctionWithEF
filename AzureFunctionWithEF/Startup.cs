@@ -5,6 +5,7 @@ using System;
 using AzureFunctionWithEF.Common.Data;
 using AzureFunctionWithEF.Services;
 using AzureFunctionWithEF.Repositories;
+using AzureFunctionWithEF.Services.Interfaces;
 
 [assembly: FunctionsStartup(typeof(AzureFunctionWithEF.StartUp))]
 
@@ -20,7 +21,7 @@ namespace AzureFunctionWithEF
 
             builder.Services.AddScoped<IDimAccountRepository, DimAccountRepository>();
             builder.Services.AddScoped<IDimService, DimService>();
-
+            builder.Services.AddScoped<IGetConnections, GetConnections>();
         }
     }
 }
