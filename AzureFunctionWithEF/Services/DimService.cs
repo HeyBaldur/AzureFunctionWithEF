@@ -1,4 +1,6 @@
-﻿using AzureFunctionWithEF.Repositories;
+﻿using AzureFunctionWithEF.Common.Exceptions;
+using AzureFunctionWithEF.Repositories;
+using AzureFunctionWithEF.Services.Interfaces;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -9,24 +11,42 @@ namespace AzureFunctionWithEF.Services
     public class DimService: IDimService
     {
         private readonly IDimAccountRepository _dimAccountRepo;
-        public DimService(IDimAccountRepository dimAccountRepo)
+        private readonly IGetConnections _connections;
+        public DimService(
+            IDimAccountRepository dimAccountRepo,
+            IGetConnections connections)
         {
             _dimAccountRepo = dimAccountRepo;
+            _connections = connections;
         }
 
-        public async Task<List<string>> ReturnListOfAccounts()
+        /// <summary>
+        /// Return all list values
+        /// </summary>
+        /// <returns></returns>
+        public Task<List<string>> ReturnListOfAccounts()
         {
-            string cnxString = string.Empty;
-            var listOfCountries = _dimAccountRepo.ReturnMissingListFromSql(cnxString);
+            try
+            {
+                return Task.Factory.StartNew(() =>
+                {
+                    string cnxString = _connections.GetConnectionString();
+                    var listOfCountries = _dimAccountRepo.ReturnMissingListFromSql(ref cnxString);
 
-            return listOfCountries;
+                    if (listOfCountries == null)
+                    {
+                        throw new NullObjectException("No list of objects were found");
+                    }
+                    else
+                    {
+                        return listOfCountries;
+                    }
+                });
+            }
+            catch (Exception ex)
+            {
+                throw new ArgumentException();
+            }
         }
-
-        //public async Task<List<DimAccount>> ReturnListOfAccounts()
-        //{
-        //    var myAccountList = await _dimAccountRepo.ReturnMissingFields
-
-        //    return myAccountList;
-        //}
     }
 }

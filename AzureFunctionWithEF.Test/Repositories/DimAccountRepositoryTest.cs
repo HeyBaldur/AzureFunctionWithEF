@@ -1,4 +1,5 @@
-﻿using AzureFunctionWithEF.Repositories;
+﻿using AzureFunctionWithEF.Common.Data;
+using AzureFunctionWithEF.Repositories;
 using Microsoft.EntityFrameworkCore;
 using Moq;
 using Newtonsoft.Json.Linq;
@@ -16,24 +17,27 @@ namespace AzureFunctionWithEF.Test.Repositories
     {
         private Mock<IDimAccountRepository> _dimAccountMock;
         private Mock<DbContext> _dbContextMock;
+        private Mock<MyDbContext> _dbContext;
 
         [SetUp]
         public void SetUp()
         {
             _dimAccountMock = new Mock<IDimAccountRepository>();
             _dbContextMock = new Mock<DbContext>();
+            _dbContext = new Mock<MyDbContext>();
         }
 
         [Test]
+        [Ignore("This is a repository, it should not be tested")]
         public void ReturnMissingListFromSql_Test()
         {
-            var myRepo = new DimAccountRepository();
+            var myRepo = new DimAccountRepository(_dbContext.Object);
             
             var configToken = ConfigureEnvironmentVariablesFromLocalSettings();
 
             string connectionString = ReturnConnectionString(configToken);
 
-            var result = myRepo.ReturnMissingListFromSql(connectionString);
+            var result = myRepo.ReturnMissingListFromSql(ref connectionString);
 
             Assert.IsNotNull(result);
         }
@@ -62,8 +66,8 @@ namespace AzureFunctionWithEF.Test.Repositories
         private static IEnumerable<JToken> ConfigureEnvironmentVariablesFromLocalSettings()
         {
             var path = Path.GetDirectoryName(typeof(DimAccountRepository)
-                .Assembly.Location); var json =
-                    File.ReadAllText(Path.Join(path, "local.settings.json"));
+                .Assembly.Location); 
+            var json = File.ReadAllText(Path.Join(path, "local.settings.json"));
             var parsed = Newtonsoft.Json.Linq.JObject.Parse(json).Values();
 
             return parsed;
